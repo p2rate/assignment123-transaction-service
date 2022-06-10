@@ -1,3 +1,4 @@
+_config/docker/volumes/mysql/**
 HELP.md
 .gradle
 build/
