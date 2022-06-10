@@ -1,0 +1,26 @@
+version: '3'
+
+networks:
+  transaction-service:
+    external: true
+
+services:
+
+  transaction-service-db:
+    image: mariadb:latest
+    container_name: transaction-service-db
+    hostname: transaction-service-db
+
+    networks:
+      - transaction-service
+
+#    ports:
+#      - 3308:3306
+
+    volumes:
+      - "../volumes/mysql:/var/lib/mysql"
+
+    env_file:
+      - "../env/development.env"
+
+

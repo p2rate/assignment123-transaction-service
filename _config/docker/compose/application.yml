@@ -1,0 +1,31 @@
+version: '3'
+
+networks:
+  transaction-service:
+    external: true
+  microservices:
+    external: true
+
+
+services:
+
+  transaction-service-api:
+    image: assignment123/transaction-service
+    build:
+      context: ../../..
+      dockerfile: _config/docker/image/Dockerfile
+
+    container_name: transaction-service-api
+    hostname: transaction-service-api
+#    command: "/scripts/run-java.sh"
+#    volumes:
+#      -
+    ports:
+      - 8082:8080
+
+    networks:
+      - transaction-service
+      - microservices
+
+    env_file:
+      - "../env/development.env"

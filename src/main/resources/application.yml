@@ -1,0 +1,156 @@
+info:
+  app:
+    name: transaction-service
+    description:
+    version: 1.0.0
+
+# --------------------------------------------------------------------------- #
+# SERVLET PROPERTIES
+# --------------------------------------------------------------------------- #
+server:
+  port: "${TS_PORT:8082}"
+  forward-headers-strategy: framework
+  error:
+    include-message: always
+    include-exception: true
+
+# --------------------------------------------------------------------------- #
+# APPLICATION METRICS (ACTUATOR)
+# --------------------------------------------------------------------------- #
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# --------------------------------------------------------------------------- #
+# APPLICATION LOGGING
+# --------------------------------------------------------------------------- #
+logging:
+  level:
+    org.springframework.security: ${TS_SPRING_SECURITY_LOG_LEVEL:warn}
+    com.ashkanzafari: ${TS_ASHKANZAFARI_LOG_LEVEL:debug}
+    root: ${TS_ROOT_LOG_LEVEL:warn}
+
+# --------------------------------------------------------------------------- #
+# SPRING CONFIGURATION
+# --------------------------------------------------------------------------- #
+
+spring:
+
+  application:
+    name: "account-service"
+
+  # ------------------------------------------------------------------------- #
+  # DATABASE CONFIGURATION
+  # ------------------------------------------------------------------------- #
+  datasource:
+    username: "${TS_DB_USER:assignment123-transaction}"
+    password: "${TS_DB_PASSWORD:QqAGtg8KTRTmH4s3634DEDzqVSsJYmKr}"
+    url: jdbc:mariadb://${TS_DB_SERVER:localhost}:${TS_DB_PORT:3308}/${TS_DB_NAME:transaction-service-db}?createDatabaseIfNotExist=true&characterEncoding=UTF-8
+    driverClassName: "org.mariadb.jdbc.Driver"
+    hikari:
+      maximum-pool-size: ${TS_MYSQL_POOL_SIZE:100}
+      connection-test-query: "SELECT 1"
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.MariaDB103Dialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+    properties:
+
+      hibernate:
+        # --------------------------------------------------------------------
+        # ADDED PROPERTIES FOR DB CREATION
+        # --------------------------------------------------------------------t
+        enable_lazy_load_no_trans: true
+        batchSize: 30
+        orderInserts: true
+        orderUpdates: true
+        connection:
+          cachePrepStmts: true
+          useServerPrepStmts: true
+          rewriteBatchedStatements: true
+          characterEncoding: utf8
+          CharSet: utf8
+          useUnicode: true
+
+# --------------------------------------------------------------------------- #
+# DEFAULT FEIGN CONFIGURATION
+# --------------------------------------------------------------------------- #
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: ${FEIGN_CLIENT_CONNECT_TIMEOUT:5000}
+        readTimeout: ${FEIGN_CLIENT_READ_TIMEOUT:60000}
+
+# --------------------------------------------------------------------------- #
+# URL Configuration FOR FEIGN CLIENTS
+# --------------------------------------------------------------------------- #
+services:
+  account:
+    base-url: "${TS_ACCOUNT_BASE_URL:http://localhost:8081}"
+
+
+
+# --------------------------------------------------------------------------- #
+# SpringDoc
+# --------------------------------------------------------------------------- #
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+  show-actuator: true
+
+
+# --------------------------------------------------------------------------- #
+# Application Specific CONFIGURATION
+# --------------------------------------------------------------------------- #
+app:
+  sys:
+    authentication:
+      expirationInDays: 2
+      aesKey: "averystrongpasswordhahaha!!averystrongpasswordhahaha!!averystrongpasswordhahaha!!"
+      prefix: "Bearer"
+      header: "Authorization"
+      signUpUrl: "/api/login"
+      privateKey: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDJTIzvDlpQ9UOl
+        M+XhC3HZRcdvcjoQu6r3s4+4+uQ2nzruo2R2Sw4r3DZo0aTW1Ef5/YgSm4z6ZO4Z
+        DIJdGctXMyqH9bqRq7AEFX8dNh5C+kGOSgrrVq2uVx2ERYOlibdfQMeP2yikXP5u
+        7PMz3E7EqsyYAa1QO7QPHy9if1iZzIK9WZsC4ICVnjZSfa8d+x8kjp4NAy7knc/I
+        7pawsNBVim29yztDguFzCYDrwqirmwiktsDVG9olZ5EP5u7Ffco5Qinkox4TXKqX
+        UvwxxEu0M55m9X1aoDYEhIDu2wEdirHPeC/oH/sycwrqCemxu6KenS8nhMTm/1WV
+        +hMkJM4TAgMBAAECggEABC++Yp5mzHY9YOsyZbrKNF2aJzw17vEoPhyS6aL2Khin
+        rhzh0v/+nHTpAMcTaZBiqtVWBiUMCo0c0pKLB4qoyvh6cvduWOc8MumLijz85iG0
+        SVRK49gappyTNZQIh+HUWXvMaraBIuH4PLBa4oI7dSWkOakXRKrpNMNORfsmCZTI
+        zamCL/2A0ouqwXYSlJuJZoireON8MVdNM/mqWNZOO4885uwjycVYqqFu6QnV8FGB
+        +Ohv2a360ncOeY69F1Jf1NRYkDyTG19e7WlbE5BQ3eY8YA4Pxb32Y0ocZIxN8qcx
+        HXddNuZu3gNqeMZ3sgqyNAb+vkS/xqyxcL3wRcYrgQKBgQD2sM0hAtB8fYOV1FVG
+        6oDzd+xEaw55sKG+5sMwuryrAqEL+b10P86yBc4Fgqo4fehOiSd40fB5kRz56c8j
+        XB4bSmj3IQq8mX2rXCglpaiywY+r5EW0tyIDqeU0/Kk8RuXwUQ86Qt3wLCq23zbz
+        O8CethxJtkZcEKZ6/tViXj5pQQKBgQDQ5TxOJO7+o2AQaPdgv5HVo5sGIp8L0jmR
+        rTqNHvbDHmvUrqJl7YQFW+8gCns8f7EreTSb8kwm1a0FGLeyO3VBBPpearrgE8to
+        Q5DryUOFv+jTdyXEiyBDBdJBff12JkDg7JIm/inbnBxJfQfW/8SATDL+X38C9W/v
+        K0NNeD8uUwKBgBq3x1+96EqzZV8C4kGOAG1eHa7DUYwIf1wnrhhHAUwcOskLQWOn
+        zYEmc8vQ/RKlQFXRMP867aqc9uByXEbeITyfcILjh0Ap95xpnMeHC6BgqmjZjlsm
+        Qn7XFcYJX2Lx4tGGVfnfaB4tCmtH/bGWVSRbYPDy1uf9vaowk3fV8TiBAoGBAKmq
+        FlHt44NEVKjfaFTXI26epDHWetFSHNn6Fb068fdGRRSIBnS89eaYZd7jRHa9y7tg
+        hV9H65v7Hr0t9z0216RIk8WN8FxBF4uGnTU00bfXSBZBBpbc3QYyuzPgTbXhmf5V
+        httOwdaRs9PoTi7Mq9/8g8pg67sOd6yMuew5By/rAoGBAJqHtIpQLcBXU264lGwa
+        dytZIlV+G2W+V7+WPqBceOEsMqaf9r3KMmct5D/Q2JULbgHFERnxyCk35PLO+Oei
+        O5ADlZd8G97iIyu+QWcGpLZ26PwfIh92pAqaX4ezOqC6CJGx+ArkaKPkZeL8wNjN
+        TH0IcvSvvygZQZQqYB2Ny8/U
+        -----END PRIVATE KEY-----
