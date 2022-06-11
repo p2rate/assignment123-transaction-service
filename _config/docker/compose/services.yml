@@ -14,8 +14,8 @@ services:
     networks:
       - transaction-service
 
-#    ports:
-#      - 3308:3306
+   ports:
+     - 3308:3306
 
     volumes:
       - "../volumes/mysql:/var/lib/mysql"
